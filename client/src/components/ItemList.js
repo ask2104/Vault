@@ -7,16 +7,16 @@ import {
   Card,
   CardContent,
   Typography,
+  Button,
   TextField,
-  MenuItem,
   Box,
   IconButton,
-  Chip,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
-import { format } from 'date-fns';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
+import { Delete as DeleteIcon, Search as SearchIcon, Edit as EditIcon } from '@mui/icons-material';
 
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -27,7 +27,7 @@ const ItemList = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
     fetchItems();
@@ -56,44 +56,45 @@ const ItemList = () => {
   const filteredItems = items.filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !categoryFilter || item.category === categoryFilter;
+    const matchesCategory = !selectedCategory || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Search"
-              variant="outlined"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              select
-              label="Filter by Category"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              variant="outlined"
-            >
-              <MenuItem value="">All Categories</MenuItem>
-              {categories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-        </Grid>
+      <Box sx={{ mb: 4, display: 'flex', gap: 2, alignItems: 'center' }}>
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ flexGrow: 1 }}
+          InputProps={{
+            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+          }}
+        />
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            label="Category"
+          >
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.map((category) => (
+              <MenuItem key={category} value={category}>
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/add')}
+        >
+          Add New Item
+        </Button>
       </Box>
 
       <Grid container spacing={3}>
@@ -105,34 +106,36 @@ const ItemList = () => {
                   {item.title}
                 </Typography>
                 <Typography color="textSecondary" gutterBottom>
+                  Category: {item.category}
+                </Typography>
+                <Typography variant="body2" paragraph>
                   {item.description}
                 </Typography>
-                <Box sx={{ mb: 2 }}>
-                  <Chip
-                    label={item.category}
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
-                  <Typography variant="body2" color="textSecondary">
-                    Purchase: {format(new Date(item.purchaseDate), 'MMM d, yyyy')}
+                <Typography variant="body2">
+                  Purchase Date: {new Date(item.purchaseDate).toLocaleDateString()}
+                </Typography>
+                {item.expiryDate && (
+                  <Typography variant="body2">
+                    Expiry Date: {new Date(item.expiryDate).toLocaleDateString()}
                   </Typography>
-                  {item.expiryDate && (
-                    <Typography variant="body2" color="textSecondary">
-                      Expires: {format(new Date(item.expiryDate), 'MMM d, yyyy')}
-                    </Typography>
-                  )}
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                )}
+                {item.price && (
+                  <Typography variant="body2">
+                    Price: ₹{item.price}
+                  </Typography>
+                )}
+                <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                   <IconButton
-                    onClick={() => navigate(`/edit/${item._id}`)}
+                    color="primary"
                     size="small"
+                    onClick={() => navigate(`/edit/${item._id}`)}
                   >
                     <EditIcon />
                   </IconButton>
                   <IconButton
-                    onClick={() => handleDelete(item._id)}
-                    size="small"
                     color="error"
+                    size="small"
+                    onClick={() => handleDelete(item._id)}
                   >
                     <DeleteIcon />
                   </IconButton>
