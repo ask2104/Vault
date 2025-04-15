@@ -1,23 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-
-// Components
 import Navbar from './components/Navbar';
 import ItemList from './components/ItemList';
 import ItemForm from './components/ItemForm';
+import ItemDetail from './components/ItemDetail';
 
+// Create a theme instance
 const theme = createTheme({
   palette: {
-    mode: 'light',
     primary: {
       main: '#1976d2',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#f50057',
     },
   },
 });
@@ -25,17 +22,16 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <CssBaseline />
-        <Router>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<ItemList />} />
-            <Route path="/add" element={<ItemForm />} />
-            <Route path="/edit/:id" element={<ItemForm />} />
-          </Routes>
-        </Router>
-      </LocalizationProvider>
+      <CssBaseline />
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<ItemList />} />
+          <Route path="/add" element={<ItemForm />} />
+          <Route path="/edit/:id" element={<ItemForm />} />
+          <Route path="/item/:id" element={<ItemDetail />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }

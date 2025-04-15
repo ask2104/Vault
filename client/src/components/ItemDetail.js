@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -22,11 +22,7 @@ const ItemDetail = () => {
   const [item, setItem] = useState(null);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchItem();
-  }, [id]);
-
-  const fetchItem = async () => {
+  const fetchItem = useCallback(async () => {
     try {
       const res = await axios.get(`/api/items/${id}`);
       setItem(res.data);
@@ -34,7 +30,11 @@ const ItemDetail = () => {
       setError('Error fetching item details');
       console.error('Error fetching item:', err);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchItem();
+  }, [fetchItem]);
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this item?')) {

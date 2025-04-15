@@ -43,6 +43,25 @@ router.get('/', async (req, res) => {
     }
 });
 
+// @route   GET api/items/:id
+// @desc    Get a single item by ID
+// @access  Public
+router.get('/:id', async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+        if (!item) {
+            return res.status(404).json({ msg: 'Item not found' });
+        }
+        res.json(item);
+    } catch (err) {
+        console.error(err.message);
+        if (err.kind === 'ObjectId') {
+            return res.status(400).json({ msg: 'Invalid item ID' });
+        }
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   POST api/items
 // @desc    Create a new item
 // @access  Public
@@ -152,4 +171,4 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;

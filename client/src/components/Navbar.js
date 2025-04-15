@@ -5,34 +5,49 @@ import {
   Toolbar,
   Typography,
   Button,
+  Box,
   Container,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Receipt as ReceiptIcon } from '@mui/icons-material';
 
 const Navbar = () => {
   return (
-    <AppBar position="static">
+    <AppBar position="sticky" elevation={0} sx={{ background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)' }}>
       <Container maxWidth="lg">
-        <Toolbar>
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/"
-            sx={{
-              flexGrow: 1,
-              textDecoration: 'none',
-              color: 'inherit',
-            }}
-          >
-            Warranty Manager
-          </Typography>
+        <Toolbar disableGutters>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <ReceiptIcon sx={{ mr: 1, fontSize: 28 }} />
+            <Typography
+              variant="h6"
+              component={RouterLink}
+              to="/"
+              sx={{
+                textDecoration: 'none',
+                color: 'white',
+                fontWeight: 600,
+                letterSpacing: '0.5px',
+              }}
+            >
+              Warranty & Bills Locker
+            </Typography>
+          </Box>
           <Button
-            color="inherit"
             component={RouterLink}
             to="/add"
-            startIcon={<AddIcon />}
+            variant="contained"
+            color="secondary"
+            sx={{
+              ml: 2,
+              px: 3,
+              py: 1,
+              borderRadius: 2,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+              },
+            }}
           >
-            Add Item
+            Add New Item
           </Button>
         </Toolbar>
       </Container>

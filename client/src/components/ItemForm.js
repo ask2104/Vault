@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -15,9 +15,6 @@ import {
   IconButton,
 } from '@mui/material';
 import { PhotoCamera, Delete as DeleteIcon } from '@mui/icons-material';
-
-// Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:5000';
 
 const categories = ['electronics', 'furniture', 'appliances', 'other'];
 
@@ -38,13 +35,7 @@ const ItemForm = () => {
   const [error, setError] = useState('');
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  useEffect(() => {
-    if (isEditMode) {
-      fetchItem();
-    }
-  }, [isEditMode]);
-
-  const fetchItem = async () => {
+  const fetchItem = useCallback(async () => {
     try {
       const res = await axios.get(`/api/items/${id}`);
       const item = res.data;
@@ -64,7 +55,13 @@ const ItemForm = () => {
       setError('Error fetching item details');
       console.error('Error fetching item:', err);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (isEditMode) {
+      fetchItem();
+    }
+  }, [isEditMode, fetchItem]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -131,11 +128,13 @@ const ItemForm = () => {
         <Typography variant="h5" gutterBottom>
           {isEditMode ? 'Edit Item' : 'Add New Item'}
         </Typography>
+
         {error && (
           <Typography color="error" sx={{ mb: 2 }}>
             {error}
           </Typography>
         )}
+
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
